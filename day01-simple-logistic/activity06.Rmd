@@ -127,7 +127,7 @@ tidy(resume_mod) %>%
 
 $$
  \begin{aligned}
-\widehat{\texttt{received\_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
+\widehat{\texttt{received\\_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
 &= -2.675 + 0.438	\times \text{race}
 \end{aligned}
 $$
@@ -138,9 +138,9 @@ $$
 
 $$
  \begin{aligned}
-\widehat{\texttt{received\_callback}}&= -2.675 + 0.438	\times \text{race} \\
+\widehat{\texttt{received\\_callback}}&= -2.675 + 0.438	\times \text{race} \\
 &= 2.675 + 0.438(0) \\
-\widehat{\texttt{received\_callback}}&= -2.675
+\widehat{\texttt{received\\_callback}}&= -2.675
 \end{aligned}
 $$
 
