@@ -133,7 +133,7 @@ tidy(resume_mod) %>%
 
 $$
  \begin{aligned}
-\widehat{\texttt{received_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
+\widehat{\texttt{received\_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
 &= -2.675 + 0.438   \times \text{race}
 \end{aligned}
 $$
@@ -145,8 +145,8 @@ is perceived it as “white” then race is “1”.
 
 $$
  \begin{aligned}
-\widehat{\texttt{received_callback}}&= -2.675 + 0.438   \times \text{race} \\
+\widehat{\texttt{received\_callback}}&= -2.675 + 0.438  \times \text{race} \\
 &= 2.675 + 0.438(0) \\
-\widehat{\texttt{received_callback}}&= -2.675
+\widehat{\texttt{received\_callback}}&= -2.675
 \end{aligned}
 $$
