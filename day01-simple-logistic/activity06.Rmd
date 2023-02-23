@@ -14,6 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 ```{r,message=FALSE}
 library(tidyverse)
 library(tidymodels) 
+library(lessR)
 ```
 
 ## Task 3: Load the data
@@ -28,8 +29,17 @@ call back rates
 2) I think the variable "received_callback" was a numeric variable (More of a binary variable). The value "o" represents that the applicant did not get a call back and the value "1" represents that the applicant got a call back for the job application.
 
 
+
 ```{r}
-# creating visualization for the received_callback variable
+# Adding a new varibale called condition to show whether the applicant received a call back
+
+resume<-resume %>% mutate(condition=ifelse(resume$received_callback=="1","Yes","No"))
+
+```
+
+
+```{r}
+# creating barplot visualization for the received_callback variable
 
 plot1<-resume%>%ggplot(aes(x=received_callback))+
   geom_bar(fill = "lightblue", colour = "black")+
@@ -41,14 +51,48 @@ plot1<-resume%>%ggplot(aes(x=received_callback))+
   theme(plot.title = element_text(hjust = 0.5))
 
 plot1
-     
+
+
 ```
 
-3) I have choosen bar plot as an appropriate visualization for the variable "received_callback" which you can see above.
+3) I have choosen a bar plot to visulaize the numerical summary of applicants callback status which you can see above.
 
+4) Below is the numerical summary table that I have recreated and also a pie chart to visualize the numerical summary table
 
 ```{r}
-callback_table<-table(resume$received_callback)
-callback_table
+# Creating a summary table to display the numerical summary table of the applicants callback status
+
+summary_table <- resume %>% 
+  group_by(condition) %>% # Variable to be transformed
+  count() %>% 
+  ungroup() %>% 
+  mutate(percent = (`n` / sum(`n`))*100)%>%
+  mutate(across(where(is.numeric), round, 2))
+
+print.data.frame(summary_table)
+
+
+# Creating a piechart to visualize applicants condition of received callback
+
+plot2<-ggplot(summary_table, aes(x = "", y = percent, fill = condition)) +
+  geom_col(color = "black") +
+  geom_label(aes(label = percent), color = "black",
+            position = position_stack(vjust = 0.5),
+            show.legend = FALSE) +
+  labs(title = "Percentage of applicants callback status",
+       caption = "Reference: https://r-charts.com/part-whole/pie-chart-percentages-ggplot2/")+
+  guides(fill = guide_legend(title = "Received a call back")) +
+  scale_fill_brewer(palette = "Pastel1")+
+  coord_polar(theta = "y") + 
+  theme_void()
+
+plot2
+
+
 ```
+
+
+5) According to the results of 3 and 4, the majority of applicants (91.95%) did not receive a callback for their application, while only a few applicants (8.05%) did.
+
+
 
