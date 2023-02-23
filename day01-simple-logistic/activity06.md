@@ -94,3 +94,59 @@ plot2
 5.  According to the results of 3 and 4, the majority of applicants
     (91.95%) did not receive a callback for their application, while
     only a few applicants (8.05%) did.
+
+## Task 4: Probability and odds
+
+6.  The probability that a randomly selected résumé/person will be
+    called back is **0.08**
+
+7.  The odds that a randomly selected résumé/person will be called back
+    is **0.087**
+
+## Task 5: Logistic regression
+
+8.  The probability that a randomly selected résumé/person perceived as
+    Black will be called back is **0.032**
+
+9.  The odds that a randomly selected résumé/person perceived as Black
+    will be called back is **0.033**
+
+``` r
+# The {tidymodels} method for logistic regression requires that the response be a factor variable
+resume <- resume %>% 
+  mutate(received_callback = as.factor(received_callback))
+
+resume_mod <- logistic_reg() %>%
+  set_engine("glm") %>%
+  fit(received_callback ~ race, data = resume, family = "binomial")
+
+tidy(resume_mod) %>% 
+  knitr::kable(digits = 3)
+```
+
+| term        | estimate | std.error | statistic | p.value |
+|:------------|---------:|----------:|----------:|--------:|
+| (Intercept) |   -2.675 |     0.083 |   -32.417 |       0 |
+| racewhite   |    0.438 |     0.107 |     4.083 |       0 |
+
+10. The estimated regression equation is
+
+$$
+ \begin{aligned}
+\widehat{\texttt{received_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
+&= -2.675 + 0.438   \times \text{race}
+\end{aligned}
+$$
+
+**Note:** Since the Race variable is a categorical variable with two
+levels, R has created a dummy variable for race in the model. So if the
+applicant is perceived as “Black” then race is “0” and if the applicant
+is perceived it as “white” then race is “1”.
+
+$$
+ \begin{aligned}
+\widehat{\texttt{received_callback}}&= -2.675 + 0.438   \times \text{race} \\
+&= 2.675 + 0.438(0) \\
+\widehat{\texttt{received_callback}}&= -2.675
+\end{aligned}
+$$
