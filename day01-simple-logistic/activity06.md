@@ -41,7 +41,8 @@ plot1<-resume%>%ggplot(aes(x=received_callback))+
   labs(title = "Barplot for received callback",
        x="Received a callback",
        y="Count")+
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5))+
+  theme_test()
 
 plot1
 ```
@@ -106,10 +107,10 @@ plot2
 ## Task 5: Logistic regression
 
 8.  The probability that a randomly selected résumé/person perceived as
-    Black will be called back is **0.032**
+    Black will be called back is **0.064**
 
 9.  The odds that a randomly selected résumé/person perceived as Black
-    will be called back is **0.033**
+    will be called back is **0.069**
 
 ``` r
 # The {tidymodels} method for logistic regression requires that the response be a factor variable
@@ -134,7 +135,7 @@ tidy(resume_mod) %>%
 $$
  \begin{aligned}
 \widehat{\texttt{received\\_callback}}&= \hat{\beta}_0 + \hat{\beta}_1 \times \texttt{race}\\
-&= -2.675 + 0.438   \times \text{race}
+&= -2.67 + 0.44 \times \text{race}
 \end{aligned}
 $$
 
@@ -143,10 +144,35 @@ levels, R has created a dummy variable for race in the model. So if the
 applicant is perceived as “Black” then race is “0” and if the applicant
 is perceived it as “white” then race is “1”.
 
+11. The simplified estimated regression equation corresponding to
+    résumés/persons perceived as Black.
+
 $$
  \begin{aligned}
-\widehat{\texttt{received\\_callback}}&= -2.675 + 0.438 \times \text{race} \\
+\widehat{\texttt{received\\_callback}}&= -2.67 + 0.44   \times \text{race} \\
 &= 2.675 + 0.438(0) \\
-\widehat{\texttt{received\\_callback}}&= -2.675
+\widehat{\texttt{received\\_callback}}&= -2.67
 \end{aligned}
 $$
+
+``` r
+# To caluculate odds of logistic regression model
+odds <- exp(-2.67)
+probability<- odds/(1+odds)
+log_odds<-log(odds)
+
+probability<-round(probability,digits=3)
+odds<- round(odds,digits = 3)
+```
+
+12. If a randomly selected résumé/person perceived as Black, the log
+    odds that they will be called back is **-2.67**
+
+13. If a randomly selected résumé/person perceived as Black, the odds
+    that they will be called back is **0.069**, this was the same value
+    that I obtained in question 9. We can back transform a log odds
+    value by using **exp()** function to obtain odds value.
+
+14. If a randomly selected résumé/person perceived as Black, the
+    probability that they will be called back is **0.065**, this was the
+    same value that I obtained in question 8.
