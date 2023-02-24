@@ -9,6 +9,7 @@ Activity 6 - Logistic Regression
 library(tidyverse)
 library(tidymodels) 
 library(lessR)
+library(GGally)
 ```
 
 ## Task 3: Load the data
@@ -156,9 +157,14 @@ $$
 $$
 
 ``` r
-# To caluculate odds of logistic regression model
+# To calculate the odds of a logistic regression model, use the exp() function to back transform the obtained coefficient.
+
 odds <- exp(-2.67)
+
+# Probability can be caluculated with the help of odds value as shown below
+
 probability<- odds/(1+odds)
+
 log_odds<-log(odds)
 
 probability<-round(probability,digits=3)
@@ -176,3 +182,108 @@ odds<- round(odds,digits = 3)
 14. If a randomly selected résumé/person perceived as Black, the
     probability that they will be called back is **0.065**, this was the
     same value that I obtained in question 8.
+
+# Activity 6 -Day 2
+
+``` r
+resume_select <- resume %>% dplyr::rename(sex=gender) %>% 
+  filter(job_city == "Chicago") %>% 
+  mutate(race = case_when(race == "white" ~ "White",TRUE ~ "Black"),
+         sex = case_when(sex == "f" ~ "female",TRUE ~ "male")) %>% 
+  select(received_callback, years_experience, race, sex)
+```
+
+1.  -   In the above code, since we are trying to build a multiple
+        logistics regression model. We are creating another data set
+        that only has the variables we are using for the model.
+    -   The variable “gender” was renamed to “sex”.
+    -   we filtered the applicants based on their job\_city which is
+        Chicago since we are trying to find difference in callback rates
+        for jobs in Chicago.
+    -   By using the mutate function the values of the variables “race”
+        and “sex” were changed. Like the first letter for values of race
+        were capitalized. The values of variable “sex” were coded as “m”
+        for male and “f” for female. So, we changed those into “male”
+        and “female”.
+    -   After all these, we have used the select function to keep only
+        the required variables for the model in the data set.
+
+## Task 2: Relationship Exploration
+
+``` r
+ggbivariate(resume_select,"received_callback")+scale_fill_manual(values = c("#E69F00","#999999"))
+```
+
+![](activity06_files/figure-gfm/unnamed-chunk-9-1.png)<!-- -->
+
+2.  From the above we can see the whether the explanatory variables has
+    any impact on the applicants getting a callback for jobs in chicago.
+    I can see that the male applicants getting more callbacks than the
+    female applicants, which is not too significant but there is a
+    slight difference. It was the same with the race variable, where
+    whit appliants got a little more callbacks than those of Black
+    applicants.
+
+## Task 3: Fitting the model
+
+``` r
+mult_log_mod <- glm(received_callback ~ years_experience + race + sex, data = resume_select, family = "binomial")
+
+tidy(mult_log_mod)
+```
+
+    ## # A tibble: 4 × 5
+    ##   term             estimate std.error statistic  p.value
+    ##   <chr>               <dbl>     <dbl>     <dbl>    <dbl>
+    ## 1 (Intercept)       -3.28      0.181     -18.1  4.41e-73
+    ## 2 years_experience   0.0449    0.0163      2.75 5.94e- 3
+    ## 3 raceWhite          0.426     0.157       2.72 6.53e- 3
+    ## 4 sexmale            0.580     0.203       2.86 4.28e- 3
+
+``` r
+tidy(mult_log_mod, exponentiate = TRUE) %>% 
+  knitr::kable(digits = 3)
+```
+
+| term              | estimate | std.error | statistic | p.value |
+|:------------------|---------:|----------:|----------:|--------:|
+| (Intercept)       |    0.038 |     0.181 |   -18.082 |   0.000 |
+| years\_experience |    1.046 |     0.016 |     2.751 |   0.006 |
+| raceWhite         |    1.532 |     0.157 |     2.720 |   0.007 |
+| sexmale           |    1.786 |     0.203 |     2.857 |   0.004 |
+
+2.  For each additional year of experience for an applicant in Chicago,
+    we expect the odds of an applicant receiving a call back to increase
+    by 1.046 units. Assuming that the applicants have similar time in
+    spent in college, similar inferred races, and similar inferred sex.
+
+## Task 4: Assessing model fit
+
+``` r
+# To store residuals and create row number variable
+mult_log_aug <- augment(mult_log_mod, type.predict = "response", 
+                      type.residuals = "deviance") %>% 
+                      mutate(id = row_number())
+
+# Plot residuals vs fitted values
+ggplot(data = mult_log_aug, aes(x = .fitted, y = .resid)) + 
+geom_point() + 
+geom_hline(yintercept = 0, color = "red") + 
+labs(x = "Fitted values", 
+     y = "Deviance residuals", 
+     title = "Deviance residuals vs. fitted")
+```
+
+![](activity06_files/figure-gfm/unnamed-chunk-12-1.png)<!-- -->
+
+``` r
+# Plot residuals vs row number
+ggplot(data = mult_log_aug, aes(x = id, y = .resid)) + 
+geom_point() + 
+geom_hline(yintercept = 0, color = "red") + 
+labs(x = "id", 
+     y = "Deviance residuals", 
+     title = "Deviance residuals vs. id")
+```
+
+![](activity06_files/figure-gfm/unnamed-chunk-12-2.png)<!-- -->
